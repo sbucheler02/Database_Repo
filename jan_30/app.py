@@ -39,5 +39,9 @@ def f(player):
 
 print(f("schmimi01"))
 
-# iface = gr.Interface(fn = f, inputs = gr.Dropdown(choices = fetch_phillies()),outputs = "number")
-# iface.launch()
+with gr.Blocks() as iface:
+    player = gr.Dropdown(label = "Player ID:", choices = fetch_phillies(), interactive= True)
+    homeruns = gr.Number(label = "Homeruns Hit:")
+    player.change(fn = f, inputs = [player], outputs = [homeruns])
+
+iface.launch()
