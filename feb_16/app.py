@@ -29,7 +29,7 @@ conn.close()
 #for player in records:
 #    players_list.append(player[0])
 #print(players_list)
-
+"""
 def selected_player(player):
     return player
 
@@ -48,10 +48,27 @@ def batting_chart(player):
     conn.close()
     return player_record
 
-print(batting_chart())
+print(batting_chart())"""
+
+def f(playerID):
+    conn = sqlite3.connect('../baseball.db')
+    cursor = conn.cursor()
+    query = '''
+    SELECT CAST(yearID AS text), HR
+    FROM Batting
+    WHERE teamID = 'PHI' AND playerID = ?
+
+    '''
+    cursor.execute(query, [playerID])
+    records = cursor.fetchall()
+    conn.close()
+
+    df = pd.DataFrame(records, columns = ['year', 'home runs'])
+    return df
 
 with gr.Blocks() as iface:
-    players = gr.Dropdown(records, interactive = True)
-    players.change(fn = selected_player, inputs = [records])
+    player_dd = gr.Dropdown(records, interactive = True)
+    plot = gr.LinePlot(x = 'year', y = 'home runs')
+    player_dd.change(fn = f, inputs = [player_dd], outputs = [plot])
 
 iface.launch()
